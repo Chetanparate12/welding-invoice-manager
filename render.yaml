@@ -7,3 +7,39 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.13
+
+1. First, sign up at [Render.com](https://render.com)
+
+2. Once logged in:
+   - Click "New +"
+   - Select "Web Service"
+   - Connect your GitHub repository (welding-invoice-manager)
+
+3. Configure your web service:
+   - Name: parate-welding
+   - Environment: Python
+   - Region: Choose closest to India
+   - Branch: main
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `gunicorn app:app`
+
+4. Add Environment Variables:
+   - PYTHON_VERSION: 3.9.13
+   - SECRET_KEY: (your secret key)
+
+5. Select Plan:
+   - Choose "Free" tier
+   - Click "Create Web Service"
+
+Your render.yaml file is already configured correctly:
+```yaml
+services:
+  - type: web
+    name: parate-welding
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.13
+```
