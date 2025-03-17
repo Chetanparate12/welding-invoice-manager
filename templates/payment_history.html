@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Payment History - Bill #{{ bill.id }}</h2>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Bills</a>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>Bill Details</h4>
+                <table class="table">
+                    <tr>
+                        <th width="200">Customer Name:</th>
+                        <td>{{ bill.customer_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone Number:</th>
+                        <td>{{ bill.phone_number }}</td>
+                    </tr>
+                    <tr>
+                        <th>Bill Date:</th>
+                        <td>{{ bill.bill_date.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Amount:</th>
+                        <td>₹{{ "%.2f"|format(bill.total_amount) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Remaining Amount:</th>
+                        <td>₹{{ "%.2f"|format(bill.remaining_amount) }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h4>Payment Records</h4>
+                {% if bill.payments %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Payment Date</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in bill.payments %}
+                        <tr>
+                            <td>{{ payment.payment_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>₹{{ "%.2f"|format(payment.amount) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="alert alert-info">No payment records found.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
