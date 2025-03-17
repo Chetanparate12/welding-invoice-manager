@@ -3,10 +3,12 @@ services:
     name: parate-welding
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.13
+      - key: PORT
+        value: 8000
 
 1. First, sign up at [Render.com](https://render.com)
 
