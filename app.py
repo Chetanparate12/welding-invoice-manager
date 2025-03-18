@@ -127,14 +127,28 @@ def edit_bill(bill_id):
 
 @app.route('/pay_bill/<int:bill_id>', methods=['POST'])
 def pay_bill(bill_id):
-    bill = Bill.query.get_or_404(bill_id)
-    payment_amount = float(request.form['payment_amount'])
-    
-    if payment_amount <= bill.remaining_amount:
-        payment = Payment(bill_id=bill.id, amount=payment_amount)
-        bill.remaining_amount -= payment_amount
+    try:
+        bill = Bill.query.get_or_404(bill_id)
+        amount = float(request.form['payment_amount'])
+        
+        if amount <= 0 or amount > bill.remaining_amount:
+            flash('Invalid payment amount', 'danger')
+            return redirect(url_for('index'))
+            
+        payment = Payment(
+            bill_id=bill.id,
+            amount=amount,
+            payment_date=datetime.now()
+        )
+        bill.remaining_amount -= amount
+        
         db.session.add(payment)
         db.session.commit()
+        flash('Payment recorded successfully', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash('Error processing payment', 'danger')
         
     return redirect(url_for('index'))
 
