@@ -56,7 +56,7 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="number" name="quantity[]" class="form-control quantity" step="1" min="1" required>
+                                            <input type="number" name="quantity[]" class="form-control quantity" step="0.01" min="0.01" required>
                                         </td>
                                         <td><input type="number" name="price[]" class="form-control price" step="0.01" min="0" required></td>
                                         <td>₹<span class="subtotal">0.00</span></td>
@@ -189,28 +189,61 @@ function updatePlaceholder(select) {
     const quantityInput = select.parentElement.nextElementSibling.querySelector('input');
     if (select.value === 'weight') {
         quantityInput.step = '0.01';
+        quantityInput.min = '0.01';
         quantityInput.placeholder = 'Enter KG';
     } else {
         quantityInput.step = '1';
+        quantityInput.min = '1';
         quantityInput.placeholder = 'Enter Quantity';
     }
 }
 
-function addItem() {
-    const tbody = document.querySelector('#items-table tbody');
-    const newRow = tbody.rows[0].cloneNode(true);
-    const inputs = newRow.querySelectorAll('input');
-    inputs.forEach(input => input.value = '');
-    newRow.querySelector('.subtotal').textContent = '0.00';
-    tbody.appendChild(newRow);
-}
-
-// Update existing updateSubtotal function
 function updateSubtotal(row) {
     const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
     const price = parseFloat(row.querySelector('.price').value) || 0;
     const subtotal = quantity * price;
     row.querySelector('.subtotal').textContent = subtotal.toFixed(2);
     updateTotalAmount();
+}
+
+function updateTotalAmount() {
+    let total = 0;
+    document.querySelectorAll('.subtotal').forEach(element => {
+        total += parseFloat(element.textContent) || 0;
+    });
+    
+    document.getElementById('total-amount').textContent = total.toFixed(2);
+    document.getElementById('total-amount-input').value = total.toFixed(2);
+    
+    // Update remaining amount
+    const initialPayment = parseFloat(document.getElementById('initial-payment').value) || 0;
+    const remaining = Math.max(0, total - initialPayment);
+    document.getElementById('remaining-amount').textContent = remaining.toFixed(2);
+    document.getElementById('remaining-amount-input').value = remaining.toFixed(2);
+}
+
+// Add event listeners for real-time updates
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.price, .quantity').forEach(input => {
+        input.addEventListener('input', function() {
+            updateSubtotal(this.closest('tr'));
+        });
+    });
+    
+    document.getElementById('initial-payment').addEventListener('input', updateTotalAmount);
+});
+
+function addItem() {
+    const tbody = document.querySelector('#items-table tbody');
+    const newRow = tbody.rows[0].cloneNode(true);
+    const inputs = newRow.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.value = '';
+        input.addEventListener('input', function() {
+            updateSubtotal(this.closest('tr'));
+        });
+    });
+    newRow.querySelector('.subtotal').textContent = '0.00';
+    tbody.appendChild(newRow);
 }
 </script>{% endblock %}

@@ -9,16 +9,7 @@ app.config['SECRET_KEY'] = 'your-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bills.db'
 db = SQLAlchemy(app)
 
-# PDF configuration
-# Update PDF configuration
-import platform
-
-if platform.system() == "Windows":
-    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
-else:
-    # For Linux (Render.com)
-    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
-
+# Remove the User class and continue with Bill model
 class Bill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String(100), nullable=False)
@@ -43,7 +34,18 @@ class Payment(db.Model):
     payment_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     amount = db.Column(db.Float, nullable=False)
 
+# PDF configuration
+# Update PDF configuration
+import platform
+
+if platform.system() == "Windows":
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+else:
+    # For Linux (Render.com)
+    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+
 @app.route('/')
+@app.route('/index')
 def index():
     bills = Bill.query.order_by(Bill.bill_date.desc()).all()
     return render_template('bill_list.html', bills=bills)
