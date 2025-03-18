@@ -33,24 +33,40 @@
 
             <div class="card mb-4">
                 <div class="card-body">
-                    <h4>Items</h4>
-                    <div id="items-container">
-                        <div class="row item-row mb-3">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="item_name[]" placeholder="Item Name" required>
-                            </div>
-                            <div class="col-md-3">
-                                <input type="number" class="form-control quantity" name="quantity[]" placeholder="Quantity" min="1" required>
-                            </div>
-                            <div class="col-md-3">
-                                <input type="number" class="form-control price" name="price[]" placeholder="Price" step="0.01" min="0" required>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-danger remove-item">Remove</button>
-                            </div>
+                    <div class="row items-container">
+                        <div class="col-md-12">
+                            <table class="table" id="items-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Measurement Type</th>
+                                        <th>Quantity/KG</th>
+                                        <th>Price</th>
+                                        <th>Subtotal</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" name="item_name[]" class="form-control" required></td>
+                                        <td>
+                                            <select name="measurement_type[]" class="form-control measurement-type" onchange="updatePlaceholder(this)">
+                                                <option value="quantity">Quantity (Nos)</option>
+                                                <option value="weight">Weight (KG)</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="number" name="quantity[]" class="form-control quantity" step="1" min="1" required>
+                                        </td>
+                                        <td><input type="number" name="price[]" class="form-control price" step="0.01" min="0" required></td>
+                                        <td>₹<span class="subtotal">0.00</span></td>
+                                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeItem(this)">Remove</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-success" onclick="addItem()">Add Item</button>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success" id="add-item">Add Item</button>
                 </div>
             </div>
 
@@ -167,4 +183,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-{% endblock %}
+
+<script>
+function updatePlaceholder(select) {
+    const quantityInput = select.parentElement.nextElementSibling.querySelector('input');
+    if (select.value === 'weight') {
+        quantityInput.step = '0.01';
+        quantityInput.placeholder = 'Enter KG';
+    } else {
+        quantityInput.step = '1';
+        quantityInput.placeholder = 'Enter Quantity';
+    }
+}
+
+function addItem() {
+    const tbody = document.querySelector('#items-table tbody');
+    const newRow = tbody.rows[0].cloneNode(true);
+    const inputs = newRow.querySelectorAll('input');
+    inputs.forEach(input => input.value = '');
+    newRow.querySelector('.subtotal').textContent = '0.00';
+    tbody.appendChild(newRow);
+}
+
+// Update existing updateSubtotal function
+function updateSubtotal(row) {
+    const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+    const price = parseFloat(row.querySelector('.price').value) || 0;
+    const subtotal = quantity * price;
+    row.querySelector('.subtotal').textContent = subtotal.toFixed(2);
+    updateTotalAmount();
+}
+</script>{% endblock %}
