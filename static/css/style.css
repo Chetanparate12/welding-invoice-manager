@@ -124,3 +124,24 @@ body {
         border: 1px solid var(--border-color);
     }
 }
+
+.badge {
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.badge-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.badge-warning {
+    background-color: #f39c12;
+    color: white;
+}
+
+.badge-danger {
+    background-color: var(--danger-color);
+    color: white;
+}

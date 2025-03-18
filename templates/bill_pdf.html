@@ -59,10 +59,22 @@
             <tr>
                 <td><strong>Customer Name:</strong></td>
                 <td>{{ bill.customer_name }}</td>
+                <td style="text-align: right;"><strong>Status:</strong></td>
+                <td style="text-align: right;">
+                    {% if bill.remaining_amount == 0 %}
+                        <span style="color: #2ecc71; font-weight: bold;">PAID</span>
+                    {% elif bill.remaining_amount == bill.total_amount %}
+                        <span style="color: #e74c3c; font-weight: bold;">UNPAID</span>
+                    {% else %}
+                        <span style="color: #f39c12; font-weight: bold;">PARTIAL</span>
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <td><strong>Phone Number:</strong></td>
                 <td>{{ bill.phone_number }}</td>
+                <td style="text-align: right;"><strong>Date:</strong></td>
+                <td style="text-align: right;">{{ bill.bill_date.strftime('%Y-%m-%d') }}</td>
             </tr>
         </table>
     </div>

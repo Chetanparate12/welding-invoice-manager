@@ -175,11 +175,22 @@ def download_bill(bill_id):
 
 @app.route('/delete_bill/<int:bill_id>', methods=['POST'])
 def delete_bill(bill_id):
-    bill = Bill.query.get_or_404(bill_id)
-    if bill.remaining_amount == 0:
-        db.session.delete(bill)
-        db.session.commit()
-        flash('Bill deleted successfully', 'success')
+    try:
+        bill = Bill.query.get_or_404(bill_id)
+        if bill.remaining_amount == 0:
+            # Delete related records first
+            BillItem.query.filter_by(bill_id=bill.id).delete()
+            Payment.query.filter_by(bill_id=bill.id).delete()
+            # Then delete the bill
+            db.session.delete(bill)
+            db.session.commit()
+            flash('Bill deleted successfully', 'success')
+        else:
+            flash('Cannot delete unpaid bill', 'danger')
+    except Exception as e:
+        db.session.rollback()
+        flash('Error deleting bill', 'danger')
+    
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
