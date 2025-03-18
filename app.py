@@ -10,7 +10,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bills.db'
 db = SQLAlchemy(app)
 
 # PDF configuration
-config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+# Update PDF configuration
+import platform
+
+if platform.system() == "Windows":
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+else:
+    # For Linux (Render.com)
+    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
 
 class Bill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
